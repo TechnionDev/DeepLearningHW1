@@ -31,13 +31,23 @@ class KNNClassifier(object):
         #     y_train.
         #  2. Save the number of classes as n_classes.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # dl_train.dataset.classes
+        x_train = None
+        y_train = None
+        for batch_idx, f in enumerate(dl_train):
+            if x_train is None:
+                x_train = f[0]
+                y_train = f[1]
+            else:
+                x_train = torch.cat((x_train, f[0]), 0)
+                y_train = torch.cat((y_train, f[1]), 0)
+        n_classes = 10
         # ========================
 
-        self.x_train = x_train
-        self.y_train = y_train
-        self.n_classes = n_classes
-        return self
+        # self.x_train = x_train
+        # self.y_train = y_train
+        # self.n_classes = n_classes
+        # return self
 
     def predict(self, x_test: Tensor):
         """
@@ -92,6 +102,12 @@ def l2_dist(x1: Tensor, x2: Tensor):
     dists = None
     # ====== YOUR CODE: ======
 
+    x1_pow_2 = (x1 ** 2).sum(dim=1, keepdims=True)
+    x2_pow_2 = (x2 ** 2).sum(dim=1, keepdims=True)
+    x1x2 = x1 @ x2.T
+
+    dists = torch.sqrt(x1_pow_2 + x2_pow_2.T - 2 * x1x2)
+
     # ========================
 
     return dists
@@ -111,7 +127,7 @@ def accuracy(y: Tensor, y_pred: Tensor):
     # TODO: Calculate prediction accuracy. Don't use an explicit loop.
     accuracy = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    accuracy = (y == y_pred).sum().item() / y.shape[0]
     # ========================
 
     return accuracy
