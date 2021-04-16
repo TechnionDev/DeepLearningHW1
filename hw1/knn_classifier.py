@@ -88,10 +88,10 @@ def l2_dist(x1: Tensor, x2: Tensor):
     #    Hint: Open the expression (a-b)^2. Use broadcasting semantics to
     #    combine the three terms efficiently.
     #  - Don't use torch.cdist
-
+    # 
     dists = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+
     # ========================
 
     return dists
