@@ -21,9 +21,8 @@ class LinearClassifier(object):
         #  Create weights tensor of appropriate dimensions
         #  Initialize it from a normal dist with zero mean and the given std.
 
-        self.weights = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.weights = torch.normal(mean=0, std=weight_std, size=(n_features,n_classes))
         # ========================
 
     def predict(self, x: Tensor):
@@ -43,9 +42,9 @@ class LinearClassifier(object):
         #  Calculate the score for each class using the weights and
         #  return the class y_pred with the highest score.
 
-        y_pred, class_scores = None, None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        class_scores = x @ self.weights
+        y_pred = torch.argmin(class_scores, 1)
         # ========================
 
         return y_pred, class_scores
@@ -64,23 +63,21 @@ class LinearClassifier(object):
         #  calculate accuracy of prediction.
         #  Do not use an explicit loop.
 
-        acc = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        acc = (y == y_pred).sum().item() / y.shape[0]
         # ========================
 
         return acc * 100
 
     def train(
-        self,
-        dl_train: DataLoader,
-        dl_valid: DataLoader,
-        loss_fn: ClassifierLoss,
-        learn_rate=0.1,
-        weight_decay=0.001,
-        max_epochs=100,
+            self,
+            dl_train: DataLoader,
+            dl_valid: DataLoader,
+            loss_fn: ClassifierLoss,
+            learn_rate=0.1,
+            weight_decay=0.001,
+            max_epochs=100,
     ):
-
         Result = namedtuple("Result", "accuracy loss")
         train_res = Result(accuracy=[], loss=[])
         valid_res = Result(accuracy=[], loss=[])

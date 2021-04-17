@@ -1,7 +1,9 @@
+import math
+
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 
 import cs236781.dataloader_utils as dataloader_utils
 
@@ -31,23 +33,24 @@ class KNNClassifier(object):
         #     y_train.
         #  2. Save the number of classes as n_classes.
         # ====== YOUR CODE: ======
-        # dl_train.dataset.classes
+
         x_train = None
         y_train = None
-        for batch_idx, f in enumerate(dl_train):
+        for data in dl_train:
             if x_train is None:
-                x_train = f[0]
-                y_train = f[1]
+                x_train = data[0]
+                y_train = data[1]
             else:
-                x_train = torch.cat((x_train, f[0]), 0)
-                y_train = torch.cat((y_train, f[1]), 0)
-        n_classes = 10
+                x_train = torch.cat((x_train, data[0]), 0)
+                y_train = torch.cat((y_train, data[1]), 0)
+        n_classes = torch.unique(y_train).shape[0]
+
         # ========================
 
-        # self.x_train = x_train
-        # self.y_train = y_train
-        # self.n_classes = n_classes
-        # return self
+        self.x_train = x_train
+        self.y_train = y_train
+        self.n_classes = n_classes
+        return self
 
     def predict(self, x_test: Tensor):
         """
@@ -66,17 +69,20 @@ class KNNClassifier(object):
         #  label of it's nearest neighbors.
 
         n_test = x_test.shape[0]
-        y_pred = torch.zeros(n_test, dtype=torch.int64)
-        for i in range(n_test):
-            # TODO:
-            #  - Find indices of k-nearest neighbors of test sample i
-            #  - Set y_pred[i] to the most common class among them
-            #  - Don't use an explicit loop.
-            # ====== YOUR CODE: ======
-            raise NotImplementedError()
-            # ========================
-
+        # y_pred = torch.zeros(n_test, dtype=torch.int64)
+        # for i in range(n_test):
+        # TODO:
+        #  - Find indices of k-nearest neighbors of test sample i
+        #  - Set y_pred[i] to the most common class among them
+        #  - Don't use an explicit loop.
+        # ====== YOUR CODE: ======
+        k_nearest = torch.topk(dist_matrix, self.k, dim=0, largest=False)
+        indices = k_nearest[1].T
+        classes = self.y_train[indices]
+        y_pred = torch.mode(classes, dim=1)[0]
         return y_pred
+        # print(k_nearest)
+        # ========================
 
 
 def l2_dist(x1: Tensor, x2: Tensor):
@@ -145,10 +151,28 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         accuracies: The accuracies per fold for each k (list of lists).
     """
 
-    accuracies = []
+    accuracies = [None] * len(k_choices)
+    fold_size = math.floor(len(ds_train) / num_folds)
 
     for i, k in enumerate(k_choices):
-        model = KNNClassifier(k)
+        accuracies[i] = [0, ] * num_folds
+        # ====== YOUR CODE: ======
+        for fold_i in range(num_folds):
+            model = KNNClassifier(k)
+
+            train_indices = list(range(fold_i * fold_size)) + list(range((fold_i + 1) * fold_size, len(ds_train)))
+            val_indices = list(range(fold_i * fold_size, (fold_i + 1) * fold_size))
+            train_sampler = SubsetRandomSampler(train_indices)
+            valid_sampler = SubsetRandomSampler(val_indices)
+
+            dl_train = torch.utils.data.DataLoader(dataset=ds_train, batch_size=len(train_indices),
+                                                   sampler=train_sampler)
+            dl_valid = torch.utils.data.DataLoader(dataset=ds_train, batch_size=fold_size,
+                                                   sampler=valid_sampler)
+
+            model.train(dl_train)
+            values, labels = next(iter(dl_valid))
+            accuracies[i][fold_i] = accuracy(labels, model.predict(values))
 
         # TODO:
         #  Train model num_folds times with different train/val data.
@@ -157,8 +181,6 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         #  then it won't be exactly k-fold CV since it will be a
         #  random split each iteration), or implement something else.
 
-        # ====== YOUR CODE: ======
-        raise NotImplementedError()
         # ========================
 
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])
