@@ -22,7 +22,7 @@ class LinearClassifier(object):
         #  Initialize it from a normal dist with zero mean and the given std.
 
         # ====== YOUR CODE: ======
-        self.weights = torch.normal(mean=0, std=weight_std, size=(n_features,n_classes))
+        self.weights = torch.normal(mean=0, std=weight_std, size=(n_features, n_classes))
         # ========================
 
     def predict(self, x: Tensor):
@@ -97,9 +97,19 @@ class LinearClassifier(object):
             #     and accuracy per epoch.
             #  4. Don't forget to add a regularization term to the loss,
             #     using the weight_decay parameter.
-
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            self.weights.require_grad = True
+            loss = 0
+            total_count = 0
+            for batch_idx, batch in enumerate(dl_train):
+                y_pred, class_scores = self.predict((batch[0]))
+                loss += loss_fn(batch[0], batch[1], class_scores, y_pred)
+                autograd_grad = loss_fn.grad()
+                self.weights -= autograd_grad
+                total_correct += self.evaluate_accuracy(batch[1], y_pred) * batch[1].shape[0] / 100
+                total_count += batch[1].shape[0]
+            average_loss = loss / len(dl_train)
+            train_res['accuracy']+=[total_correct/total_count,average_loss]
             # ========================
             print(".", end="")
 
@@ -133,7 +143,9 @@ def hyperparams():
     #  Manually tune the hyperparameters to get the training accuracy test
     #  to pass.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    hp['weight_std'] = 1.0
+    hp['learn_rate'] = 1.0
+    hp['weight_decay'] = 1.0
     # ========================
 
     return hp
