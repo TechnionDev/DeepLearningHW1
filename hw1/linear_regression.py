@@ -62,7 +62,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
 
 def fit_predict_dataframe(
-    model, df: DataFrame, target_name: str, feature_names: List[str] = None,
+        model, df: DataFrame, target_name: str, feature_names: List[str] = None,
 ):
     """
     Calculates model predictions on a dataframe, optionally with only a subset of
@@ -163,7 +163,22 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # TODO: Calculate correlations with target and sort features by it
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    mean = df.mean()
+    std = df.std()
+    centralised_df = df - mean
+    print(f"df is \n"
+          f"{centralised_df}")
+    print(f"medv is \n"
+          f"{centralised_df['MEDV']}")
+    covar_presum = centralised_df.multiply(centralised_df[target_feature], axis=0)
+    covar=covar_presum.sum(axis=0)
+    print(covar)
+    std_mul = std.multiply(std[target_feature], axis='index')
+    corr = (covar / std_mul).drop(target_feature, axis=0)
+    most_corr = abs(corr)
+    top_n = most_corr.sort_values()[-n:]
+    top_n_features = top_n.index
+    top_n_corr = top_n.to_numpy()
     # ========================
 
     return top_n_features, top_n_corr
@@ -200,7 +215,7 @@ def r2_score(y: np.ndarray, y_pred: np.ndarray):
 
 
 def cv_best_hyperparams(
-    model: BaseEstimator, X, y, k_folds, degree_range, lambda_range
+        model: BaseEstimator, X, y, k_folds, degree_range, lambda_range
 ):
     """
     Cross-validate to find best hyperparameters with k-fold CV.
