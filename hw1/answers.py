@@ -80,9 +80,9 @@ part3_q3 = r"""
 1. I'd say that the learning rate is good. We can see in the graph that the accuracy rise quickly with a relatively
     steady rise, compared with the test-set accuracy. This can also be seen in the loss graph, where the loss drops
     quickly and steadily improves along with the epochs. 
+
 2. The model is slightly overfitted. The loss graph shows that while the train-set's loss improves, the valid-set's loss
     doesn't improve much. Meaning, that we fit the model for the training set without improving generalisation by much.
-
 
 """
 
@@ -92,28 +92,14 @@ part3_q3 = r"""
 # Part 4 answers
 
 part4_q1 = r"""
-**Your answer:**
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+We would like our residual graph's mean to be as close to 0 as possible, with a low variance.
+By looking at the residual plot, we can see that the trained model improves because the mean stays close to 0 while the
+  variance gets lower. Thus our error decreases.
+We can see this by comparing the top 5 features' plot with the final plot after the CV, where the variance got lower.
 """
 
 part4_q2 = r"""
-**Your answer:**
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
