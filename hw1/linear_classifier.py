@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from torch import optim
 from .losses import ClassifierLoss
 
-
+¡
 class LinearClassifier(object):
     def __init__(self, n_features, n_classes, weight_std=0.001):
         """
@@ -133,7 +133,7 @@ class LinearClassifier(object):
             # ========================
             print(".", end="")
 
-        print("")
+        print()
         return train_res, valid_res
 
     def weights_as_images(self, img_shape, has_bias=True):
