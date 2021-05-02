@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from torch import optim
 from .losses import ClassifierLoss
 
-¡
+
 class LinearClassifier(object):
     def __init__(self, n_features, n_classes, weight_std=0.001):
         """
