@@ -133,7 +133,7 @@ class LinearClassifier(object):
             # ========================
             print(".", end="")
 
-        print("")
+        print()
         return train_res, valid_res
 
     def weights_as_images(self, img_shape, has_bias=True):
