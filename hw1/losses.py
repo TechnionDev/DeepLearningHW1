@@ -64,7 +64,6 @@ class SVMHingeLoss(ClassifierLoss):
 
     # TODO: Save what you need for gradient calculation in self.grad_ctx
     # ====== YOUR CODE: ======
-    self.grad_ctx["M_mat"] = M
     self.grad_ctx["g"] = (M > 0).float()
     self.grad_ctx["samples"] = torch.LongTensor(list(range(x_scores.shape[0])))
     self.grad_ctx["g"][self.grad_ctx["samples"], y] = 0
@@ -92,7 +91,7 @@ class SVMHingeLoss(ClassifierLoss):
     y = self.grad_ctx["y"]
     r_sum = G.sum(1)
     G[N, y] = -r_sum.T
-    grad = self.grad_ctx["x"].T @ self.grad_ctx["g"]
+    grad = self.grad_ctx["x"].T @ G
     grad = grad/N.shape[0]
     # ========================
 

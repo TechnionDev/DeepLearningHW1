@@ -169,7 +169,7 @@ def hyperparams():
     # ====== YOUR CODE: ======
     hp['weight_std'] = 0.01
     hp['learn_rate'] = 0.04
-    hp['weight_decay'] = 0.003
+    hp['weight_decay'] = 0.008
     # ========================
 
     return hp
