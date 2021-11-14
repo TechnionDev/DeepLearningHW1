@@ -1,6 +1,8 @@
 # CS236781: Deep Learning on Computational Accelerators
 # Homework Assignment 1
 
+**The grade for this assignment: 99**
+
 Faculty of Computer Science, Technion.
 
 ## Introduction
